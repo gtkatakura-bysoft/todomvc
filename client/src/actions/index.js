@@ -23,9 +23,25 @@ export const editTodo = dispatch => async (id, text) => {
   await service.update({ id, text });
 };
 
-export const completeTodo = id => ({ type: types.COMPLETE_TODO, id })
+export const completeTodo = dispatch => async ({ id, completed }) => {
+  dispatch({ type: types.COMPLETE_TODO, id })
+
+  await service.update({ id, completed: !completed })
+};
+
 export const completeAll = () => ({ type: types.COMPLETE_ALL })
-export const clearCompleted = () => ({ type: types.CLEAR_COMPLETED })
+
+export const clearCompleted = dispatch => async () => {
+  dispatch({ type: types.CLEAR_COMPLETED })
+
+  const todos = await service.all();
+
+  await Promise.all(
+    todos
+      .filter(todo => todo.completed)
+      .map(({ id }) => service.destroy(id))
+  );
+}
 
 export const load = dispatch => async () => {
   const todos = await service.all();

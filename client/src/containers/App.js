@@ -36,6 +36,8 @@ const mapDispatchToProps = dispatch => ({
     addTodo: TodoActions.addTodo(dispatch),
     editTodo: TodoActions.editTodo(dispatch),
     deleteTodo: TodoActions.deleteTodo(dispatch),
+    completeTodo: TodoActions.completeTodo(dispatch),
+    clearCompleted: TodoActions.clearCompleted(dispatch),
     load: TodoActions.load(dispatch),
   })
 })
