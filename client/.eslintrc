@@ -8,6 +8,13 @@
     "no-plusplus": "off",
     "semi": ["error", "never"]
   },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["client/src"]
+      }
+    }
+  },
   "env": {
     "browser": true
   }
