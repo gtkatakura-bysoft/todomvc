@@ -18,9 +18,9 @@ export const deleteTodo = dispatch => async (id) => {
 };
 
 export const editTodo = dispatch => async (id, text) => {
-  await service.update({ id, text });
-
   dispatch({ type: types.EDIT_TODO, id, text });
+
+  await service.update({ id, text });
 };
 
 export const completeTodo = id => ({ type: types.COMPLETE_TODO, id })
