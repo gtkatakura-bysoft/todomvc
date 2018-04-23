@@ -4,16 +4,13 @@ import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import App from './containers/App'
 import reducer from './reducers'
-import TodoService from './services/TodoService';
 import 'todomvc-app-css/index.css'
 
-new TodoService().all().then(todos => {
-  const store = createStore(reducer, { todos })
+const store = createStore(reducer, { todos: [] })
 
-  render(
-    <Provider store={store}>
-      <App />
-    </Provider>,
-    document.getElementById('root')
-  )
-});
+render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+)

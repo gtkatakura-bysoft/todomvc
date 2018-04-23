@@ -4,6 +4,9 @@ const initialState = [];
 
 export default function todos(state = initialState, action) {
   switch (action.type) {
+    case 'TODOS_FETCH':
+      return action.payload;
+
     case ADD_TODO:
       return [
         ...state,
