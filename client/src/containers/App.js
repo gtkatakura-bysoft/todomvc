@@ -1,48 +1,54 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import Header from '../components/Header'
-import MainSection from '../components/MainSection'
-import * as TodoActions from '../actions'
+import { Provider, Subscribe, Container } from 'unstated'
+import App from '../components/App'
+import TodoService from '../services/TodoService'
 
-class App extends React.Component {
-  componentWillMount() {
-    this.props.actions.load();
+const service = new TodoService()
+
+class TodosContainer extends Container {
+  state = {
+    entities: [],
   }
 
-  render() {
-    const { todos, actions } = this.props;
-    return (
-      <div>
-        <Header addTodo={actions.addTodo} />
-        <MainSection todos={todos} actions={actions} />
-      </div>
-    );
+  addTodo = async (text) => {
+    const { id } = await service.create({ text })
+
+    this.setState({
+      entities: [
+        ...this.state.entities,
+        { id, text, completed: false },
+      ],
+    })
+  }
+
+  editTodo = async (id, text) => {
+    await service.update({ id, text })
+
+    const todos = this.state.entities.filter(entity => entity.id !== id)
+    const todo = this.state.entities.find(entity => entity.id === id)
+
+    this.setState({
+      entities: [
+        ...todos,
+        { ...todo, text },
+      ],
+    })
+  }
+
+  load = async () => {
+    const todos = await service.all()
+    this.setState({
+      entities: [...todos],
+    })
   }
 }
 
-App.propTypes = {
-  todos: PropTypes.array.isRequired,
-  actions: PropTypes.object.isRequired
-}
+const AppContainer = () => (
+  <Provider>
+    <Subscribe to={[TodosContainer]}>
+      {({ state, ...actions }) => <App todos={state.entities} actions={actions} />}
+    </Subscribe>
+  </Provider>
+)
 
-const mapStateToProps = state => ({
-  todos: state.todos
-})
-
-const mapDispatchToProps = dispatch => ({
-  actions: Object.assign(bindActionCreators(TodoActions, dispatch), {
-    addTodo: TodoActions.addTodo(dispatch),
-    editTodo: TodoActions.editTodo(dispatch),
-    deleteTodo: TodoActions.deleteTodo(dispatch),
-    completeTodo: TodoActions.completeTodo(dispatch),
-    clearCompleted: TodoActions.clearCompleted(dispatch),
-    load: TodoActions.load(dispatch),
-  })
-})
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App)
+export default AppContainer
